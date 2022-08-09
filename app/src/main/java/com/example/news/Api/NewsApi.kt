@@ -1,18 +1,18 @@
 package com.example.news.Api
 
+import com.example.news.Articles
 import retrofit2.Call
-import com.example.news.News
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface NewsApi {
-    @GET("https://newsapi.org/v2/")
-    fun news(): Call<List<News>>
+    @GET("v2/everything/")
+    suspend fun news(
+        @Query("q") q: String,
+        @Query("from") from: String,
+        @Query("sortBy") sort : String,
+        @Query("apiKey") key : String
+    ): Articles
 }
-
-var retrofit = Retrofit.Builder()
-    .baseUrl("https://newsapi.org/v2/everything?q=tesla&from=2022-07-06&sortBy=publishedAt&apiKey=5ed14c5204fe49b9b47b5a392cb565a7")
-    .addConverterFactory(GsonConverterFactory.create())
-    .build()
-    .create(NewsApi::class.java)
