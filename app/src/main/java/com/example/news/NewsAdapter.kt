@@ -1,44 +1,56 @@
 package com.example.news
 
+import android.content.Intent
+import android.media.Image
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
-class NewsAdapter : RecyclerView.Adapter<NewsAdapter.NewsViewHolder>() {
-    private val items = ArrayList<News>()
+class NewsAdapter(
+    private var titles: List<String>,
+    private var details: List<String>,
+    private var image: List<String>,
+    private var url: List<String>,
+) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    class NewsViewHolder(item: View) : RecyclerView.ViewHolder(item) {
-
-        val titleView: TextView
-        val author: TextView
-        val image: ImageView
+        val itemTitle: TextView = itemView.findViewById(R.id.tvTitle)
+        val itemDetails: TextView = itemView.findViewById(R.id.tvDetails)
+        val itemImage: ImageView = itemView.findViewById(R.id.ivNews)
 
         init {
-            titleView = item.findViewById(R.id.tvTitle)
-            author = item.findViewById(R.id.tvAuthor)
-            image = item.findViewById(R.id.ivNews)
+            itemView.setOnClickListener { v: View ->
+                val position: Int = adapterPosition
+                val intent = Intent(Intent.ACTION_VIEW)
+
+                intent.data = Uri.parse(url[position])
+                startActivity(itemView.context, intent, null)
+
+            }
         }
+
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsViewHolder {
-        val inflater = LayoutInflater.from(parent.context)
-        val view = inflater.inflate(R.layout.news_item, parent, false)
-        return NewsViewHolder(view)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NewsAdapter.ViewHolder {
+        val v = LayoutInflater.from(parent.context).inflate(R.layout.news_item, parent, false)
+        return ViewHolder(v)
     }
 
-    override fun onBindViewHolder(holder: NewsViewHolder, position: Int) {
-        val currentNews = items[position]
-        holder.titleView.text = currentNews.title
-        holder.author.text = currentNews.author
+    override fun onBindViewHolder(holder: NewsAdapter.ViewHolder, position: Int) {
+        holder.itemTitle.text = titles[position]
+        holder.itemDetails.text = details[position]
 
-        Glide.with(holder.itemView)
-            .load(currentNews.url)
-            .into(holder.image)
+        Glide.with(holder.itemImage)
+            .load(image[position])
+            .into(holder.itemImage)
     }
 
-    override fun getItemCount(): Int = items.size
+    override fun getItemCount(): Int = titles.size
+
 }
